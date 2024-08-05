@@ -11,8 +11,8 @@ pipeline {
         registryCredentials = "dockerhub"
     }
 
-    stages{
-        stage('BUILD'){
+    stages {
+        stage('BUILD') {
             steps {
                 sh 'mvn clean install -DskipTests'
             }
@@ -24,19 +24,19 @@ pipeline {
             }
         }
 
-        stage('UNIT TEST'){
+        stage('UNIT TEST') {
             steps {
                 sh 'mvn test'
             }
         }
 
-        stage('INTEGRATION TEST'){
+        stage('INTEGRATION TEST') {
             steps {
                 sh 'mvn verify -DskipUnitTests'
             }
         }
 
-        stage ('CODE ANALYSIS WITH CHECKSTYLE'){
+        stage('CODE ANALYSIS WITH CHECKSTYLE') {
             steps {
                 sh 'mvn checkstyle:checkstyle'
             }
@@ -72,37 +72,36 @@ pipeline {
         }
 
         stage('Build Docker App Image') {
-          steps {
-            script {
-              dockerImage = docker.build registry + ":V$BUILD_NUMBER"
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":V$BUILD_NUMBER"
+                }
             }
-          }
         }
 
         stage('Upload Image') {
             steps {
-              script {
-                docker.withRegistry('', registryCredentials) {
-                   dockerImage.push("VBUILD_NUMBER")
-                   dockerImage.push("latest")
+                script {
+                    docker.withRegistry('', registryCredentials) {
+                        dockerImage.push("VBUILD_NUMBER")
+                        dockerImage.push("latest")
+                    }
                 }
-              }
             }
         }
 
         stage('Remove Unused docker image') {
-          steps {
-            sh "docker rmi $registry:VBUILD_NUMBER"
+            steps {
+                sh "docker rmi $registry:VBUILD_NUMBER"
             }
         }
 
         steps('Kubernetes Deploy') {
-          agent {label 'KOPS'}
+            agent { label 'KOPS' }
             steps {
-              sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod"
+                sh "helm upgrade --install --force vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} --namespace prod"
             }
         }
     }
-
 
 }
