@@ -83,13 +83,13 @@ pipeline {
             steps {
                 script {
                     sh 'set -x' // Enable shell debugging
-                    echo "Testing registry access with credentials: ${registryCredentials}"
+                    echo "Testing registry access with credentials: ${registryCredential}"
                     docker.withRegistry('', registryCredential) {
                         sh 'docker info' // This will help to see if docker can connect to the registry
                     }
 
                     echo "Registry access successful. Proceeding with the image push..."
-                    docker.withRegistry('', registryCredentials) {
+                    docker.withRegistry('', registryCredential) {
                         dockerImage.push("V$BUILD_NUMBER")
                         dockerImage.push("latest")
                     }
