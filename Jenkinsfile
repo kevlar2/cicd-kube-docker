@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         registry = "devopskevlar/vprofileapp-jenkins-cicd"
-        registryCredentials = "dockerhub"
+        registryCredential = 'dockerhub'
     }
 
     stages {
@@ -84,7 +84,7 @@ pipeline {
                 script {
                     sh 'set -x' // Enable shell debugging
                     echo "Testing registry access with credentials: ${registryCredentials}"
-                    docker.withRegistry('', registryCredentials) {
+                    docker.withRegistry('', registryCredential) {
                         sh 'docker info' // This will help to see if docker can connect to the registry
                     }
 
