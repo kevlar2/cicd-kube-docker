@@ -78,14 +78,21 @@ pipeline {
                 }
             }
         }
-
         stage('Upload Image') {
             steps {
                 script {
+                    sh 'set -x' // Enable shell debugging
+                    echo "Testing registry access with credentials: ${registryCredentials}"
+                    docker.withRegistry('', registryCredentials) {
+                        sh 'docker info' // This will help to see if docker can connect to the registry
+                    }
+
+                    echo "Registry access successful. Proceeding with the image push..."
                     docker.withRegistry('', registryCredentials) {
                         dockerImage.push("V$BUILD_NUMBER")
                         dockerImage.push("latest")
                     }
+                    sh 'set +x' // Disable shell debugging
                 }
             }
         }
