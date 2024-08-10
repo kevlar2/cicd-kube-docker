@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        registry = "devopskevlar/vprofileapp"
+        registry = "devopskevlar/vprofileapp-jenkins-cicd"
         registryCredentials = "dockerhub"
     }
 
@@ -83,7 +83,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', registryCredentials) {
-                        dockerImage.push("VBUILD_NUMBER")
+                        dockerImage.push("V$BUILD_NUMBER")
                         dockerImage.push("latest")
                     }
                 }
